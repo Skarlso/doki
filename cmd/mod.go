@@ -34,7 +34,11 @@ func init() {
 
 // runModLatestCmd .
 func runModLatestCmd(cmd *cobra.Command, args []string) {
-	provider := git.NewProvider(&runner.CLIRunner{})
+	cfg := git.Config{
+		Runner: &runner.CLIRunner{},
+		Token:  globalArgs.token,
+	}
+	provider := git.NewProvider(cfg)
 	var allTags []string
 	for _, imp := range args {
 		if !strings.Contains(imp, "github") {

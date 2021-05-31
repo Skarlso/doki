@@ -31,7 +31,11 @@ func init() {
 
 // Run the service
 func runUpdateCheckCmd(cmd *cobra.Command, args []string) {
-	provider := git.NewProvider(&runner.CLIRunner{})
+	cfg := git.Config{
+		Runner: &runner.CLIRunner{},
+		Token:  globalArgs.token,
+	}
+	provider := git.NewProvider(cfg)
 	latestVersion, err := provider.GetLatestRemoteTag(owner, repo)
 	if err != nil {
 		fmt.Println("Failed to get latest version: ", err)

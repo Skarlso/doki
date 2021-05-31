@@ -37,7 +37,11 @@ func init() {
 
 // runTagCmd .
 func runTagCmd(cmd *cobra.Command, args []string) {
-	provider := git.NewProvider(&runner.CLIRunner{})
+	cfg := git.Config{
+		Runner: &runner.CLIRunner{},
+		Token:  globalArgs.token,
+	}
+	provider := git.NewProvider(cfg)
 	owner, repo, err := provider.GetOwnerAndRepoFromLocal()
 	if err != nil {
 		fmt.Println("Failed to get info from local repository: ", err)

@@ -5,31 +5,50 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"regexp"
 	"strings"
 
-	"github.com/Skarlso/doki/pkg/runner"
 	"github.com/google/go-github/v35/github"
+	"golang.org/x/oauth2"
+
+	"github.com/Skarlso/doki/pkg/runner"
 )
 
 var gitExtractor = regexp.MustCompile("^(https|git)(://|@)([^/:]+)[/:]([^/:]+)/(.+)$")
 
+// Config provides configuration options for the github provider.
+type Config struct {
+	Runner runner.Runner
+	Token  string
+}
+
 // Provider is a git functionality provider.
 type Provider struct {
-	Runner runner.Runner
+	Config
+	Client *http.Client
 }
 
 // NewProvider creates a new git functionality provider.
-func NewProvider(runner runner.Runner) *Provider {
+func NewProvider(cfg Config) *Provider {
+	client := &http.Client{}
+	if cfg.Token != "" {
+		ctx := context.Background()
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: cfg.Token},
+		)
+		client = oauth2.NewClient(ctx, ts)
+	}
 	return &Provider{
-		Runner: runner,
+		Config: cfg,
+		Client: client,
 	}
 }
 
 // GetLatestRemoteTag gets the latest tag from the given remote git repo.
 func (p *Provider) GetLatestRemoteTag(owner, repo string) (string, error) {
-	client := github.NewClient(nil)
+	client := github.NewClient(p.Client)
 	release, response, err := client.Repositories.GetLatestRelease(context.Background(), owner, repo)
 	if err != nil {
 		p.logGithubResponseBody(response)

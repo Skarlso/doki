@@ -9,4 +9,5 @@ require (
 	github.com/onsi/gomega v1.13.0
 	github.com/spf13/cobra v1.1.3
 	github.com/weaveworks/pctl v0.0.0-20210527163908-ed19b333927c
+	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 )
