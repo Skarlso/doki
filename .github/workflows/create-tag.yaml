@@ -1,5 +1,8 @@
 name: Bump version
 on: push
+env:
+  org: Skarlso
+  repo: doki
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,14 +14,17 @@ jobs:
       - uses: actions/checkout@v2.2.0
         with:
           fetch-depth: 0
-      - name: 'Get Previous tag'
-        id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      - id: previoustag
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: ${{ env.org }}
+          repo: ${{ env.repo }}
+          excludes: prerelease, draft
       - name: Push new tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.5
         with:
           default_bump: false
           tag_prefix: ""
-          custom_tag: ${{ steps.previoustag.outputs.tag }}-${{ steps.semvers.outputs.extract_branch }}
+          custom_tag: ${{ steps.previoustag.outputs.release }}-${{ steps.extract_branch.outputs.branch }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
