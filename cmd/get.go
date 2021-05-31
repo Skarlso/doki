@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/spf13/cobra"
 
 	"github.com/Skarlso/doki/pkg/git"
@@ -43,10 +44,12 @@ func runTagCmd(cmd *cobra.Command, args []string) {
 		fmt.Println("Failed to get latest version for dev tagging.")
 		os.Exit(1)
 	}
+	v := semver.MustParse(latestRelease)
+	newVersion := v.IncPatch().String()
 	branch, err := provider.GetCurrentBranch()
 	if err != nil {
 		fmt.Println("Failed to get current branch.")
 		os.Exit(1)
 	}
-	fmt.Printf("%s-%s\n", latestRelease, branch)
+	fmt.Printf("v%s-%s\n", newVersion, branch)
 }
