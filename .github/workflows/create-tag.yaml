@@ -1,5 +1,8 @@
 name: Bump version
-on: push
+on:
+  push:
+    branches-ignore:
+      - main
 env:
   org: Skarlso
   repo: doki
