@@ -1,2 +1,2 @@
-# doki
+# Dōki
 Keep versioning in sync
