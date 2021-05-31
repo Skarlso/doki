@@ -11,23 +11,18 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
         id: extract_branch
-      - uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
       - id: previoustag
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           owner: ${{ env.org }}
           repo: ${{ env.repo }}
           excludes: prerelease, draft
-      - name: Set up git
-        shell: bash
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-      - name: Push new tag
-        shell: bash
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+      - name: Run push
         env:
           new_tag: ${{ steps.previoustag.outputs.release }}-${{ steps.extract_branch.outputs.branch }}
         run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git push ${new_tag} -f
