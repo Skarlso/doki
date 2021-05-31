@@ -4,10 +4,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
+        id: extract_branch
+      - uses: actions/checkout@v2.2.0
         with:
           fetch-depth: 0
-      - name: 'Get previous tag'
+      - name: 'Get Previous tag'
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
       - name: 'Get next patch version'
@@ -19,5 +23,5 @@ jobs:
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.5
         with:
-          custom_tag: ${{ steps.semvers.output.patch }}-${GITHUB_REF##*/}
+          custom_tag: ${{ steps.semvers.outputs.patch }}-${{ steps.extract_branch.outputs.branch }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
