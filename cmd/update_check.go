@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/Skarlso/doki/pkg/git"
+	"github.com/Skarlso/doki/pkg/runner"
 )
 
 var (
@@ -25,7 +26,7 @@ func init() {
 
 // Run the service
 func runUpdateCheckCmd(cmd *cobra.Command, args []string) {
-	provider := git.NewProvider()
+	provider := git.NewProvider(&runner.CLIRunner{})
 	latestVersion, err := provider.GetLatestRemoteTag()
 	if err != nil {
 		fmt.Println("Failed to get latest version: ", err)
