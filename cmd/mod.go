@@ -7,9 +7,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/Skarlso/doki/pkg/git"
 	"github.com/Skarlso/doki/pkg/runner"
-	"github.com/spf13/cobra"
 )
 
 var gitExtract = regexp.MustCompile(`github.com/([a-zA-Z0-9\-]+)/([a-zA-Z0-9\-]+)`)
@@ -25,11 +26,31 @@ var (
 		Short: "Get the latest version for a given module.",
 		Run:   runModLatestCmd,
 	}
+	replaceCmd = &cobra.Command{
+		Use:   "replace",
+		Short: "Replace a module with a designated target",
+		Run:   runModReplaceCmd,
+	}
+	replaceArgs struct {
+		replacements []string
+	}
 )
 
 func init() {
 	RootCmd.AddCommand(modCmd)
 	modCmd.AddCommand(latestCmd)
+	modCmd.AddCommand(replaceCmd)
+
+	f := replaceCmd.PersistentFlags()
+	f.StringSliceVarP(&replaceArgs.replacements, "replacements", "p", nil, "List of replacements (--replace mod=mod@ver, mod2=mod2@ver).")
+}
+
+func runModReplaceCmd(cmd *cobra.Command, args []string) {
+	result := make([]string, 0)
+	for _, replacement := range replaceArgs.replacements {
+		result = append(result, fmt.Sprintf("-replace %s", replacement))
+	}
+	fmt.Print(strings.Join(result, " "))
 }
 
 // runModLatestCmd .
