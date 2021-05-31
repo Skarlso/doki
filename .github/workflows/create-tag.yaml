@@ -14,9 +14,11 @@ jobs:
       - name: 'Get Previous tag'
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      - name: Bump version and push tag
+      - name: Push new tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.5
         with:
+          default_bump: false
+          tag_prefix: ""
           custom_tag: ${{ steps.previoustag.outputs.tag }}-${{ steps.semvers.outputs.extract_branch }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
