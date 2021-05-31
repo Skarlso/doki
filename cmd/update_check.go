@@ -11,6 +11,11 @@ import (
 	"github.com/Skarlso/doki/pkg/runner"
 )
 
+const (
+	owner = "Skarlso"
+	repo  = "doki"
+)
+
 var (
 	// updateCheckCmd is the root for all go related commands
 	updateCheckCmd = &cobra.Command{
@@ -27,7 +32,7 @@ func init() {
 // Run the service
 func runUpdateCheckCmd(cmd *cobra.Command, args []string) {
 	provider := git.NewProvider(&runner.CLIRunner{})
-	latestVersion, err := provider.GetLatestRemoteTag()
+	latestVersion, err := provider.GetLatestRemoteTag(owner, repo)
 	if err != nil {
 		fmt.Println("Failed to get latest version: ", err)
 		os.Exit(1)

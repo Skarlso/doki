@@ -38,7 +38,12 @@ func init() {
 // runTagCmd .
 func runTagCmd(cmd *cobra.Command, args []string) {
 	provider := git.NewProvider(&runner.CLIRunner{})
-	latestRelease, err := provider.GetLatestRemoteTag()
+	owner, repo, err := provider.GetOwnerAndRepoFromLocal()
+	if err != nil {
+		fmt.Println("Failed to get info from local repository: ", err)
+		os.Exit(1)
+	}
+	latestRelease, err := provider.GetLatestRemoteTag(owner, repo)
 	if err != nil {
 		fmt.Println("Failed to get latest version for dev tagging.")
 		os.Exit(1)
