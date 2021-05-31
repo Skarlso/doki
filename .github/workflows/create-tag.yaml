@@ -9,4 +9,6 @@ jobs:
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.5
         with:
+          default_bump: false
+          tag_prefix: v
           github_token: ${{ secrets.GITHUB_TOKEN }}
