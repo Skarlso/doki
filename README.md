@@ -78,6 +78,9 @@ all the modules always have the correct replacements.
 	go mod tidy
 ```
 
+Note that we don't provide `replace` argument here. The replacements could come from a global replacements map definition.
+To have replacements in all products across multiple repos to the same thing using this single tool.
+
 ### dev tags
 
 Convenient check to retrieve a dev tag for a branch.
@@ -90,7 +93,7 @@ v0.0.1-my-new-branch
 ```
 
 It will automatically fetch the latest released tag and append the branch to it. This is the format used by `profiles`.
-These tags are pushed into on new commits so they are always up-to-date.
+New commits push into existing tags, keeping them always up-to-date.
 
 ### self update-check
 
@@ -132,7 +135,7 @@ Steps:
    ```
 
 1. The `Create release` action should run. Verify that:
-1. The release has been created in Github
+1. The release has been created in GitHub
    1. With the correct assets
    1. With the correct release notes
 1. The image has been pushed to docker

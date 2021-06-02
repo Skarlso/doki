@@ -16,6 +16,12 @@ import (
 	"github.com/Skarlso/doki/pkg/runner"
 )
 
+// HTTPRoundTripper defines an interface for HTTP RoundTripper.
+//go:generate counterfeiter -o fakes/fake_http_roundtripper.go . HTTPRoundTripper
+type HTTPRoundTripper interface {
+	RoundTrip(r *http.Request) (*http.Response, error)
+}
+
 var gitExtractor = regexp.MustCompile("^(https|git)(://|@)([^/:]+)[/:]([^/:]+)/(.+)$")
 
 // VCSProvider adds endpoints for version control related actions.
@@ -81,7 +87,7 @@ func (p *Provider) GetLatestRemoteTag(owner, repo string) (string, error) {
 	release, response, err := client.Repositories.GetLatestRelease(context.Background(), owner, repo)
 	if err != nil {
 		p.logGithubResponseBody(response)
-		return "", err
+		return "", fmt.Errorf("failed to get latest version: %w", err)
 	}
 	return release.GetTagName(), nil
 }
@@ -90,12 +96,12 @@ func (p *Provider) GetLatestRemoteTag(owner, repo string) (string, error) {
 func (p *Provider) GetOwnerAndRepoFromLocal() (string, string, error) {
 	out, err := p.Runner.Run("git", "config", "--get", "remote.origin.url")
 	if err != nil {
-		return "", "", err
+		return "", "", fmt.Errorf("failed to run git command: %w", err)
 	}
 	u := strings.ReplaceAll(string(out), ".git", "")
 	m := gitExtractor.FindAllStringSubmatch(strings.TrimSuffix(u, "\n"), -1)
 	if m == nil {
-		return "", "", fmt.Errorf("failed to extract repo information from remote url: %s\n", string(out))
+		return "", "", fmt.Errorf("failed to extract repo information from remote url: %s", string(out))
 	}
 	if len(m[0]) < 5 {
 		return "", "", fmt.Errorf("did not find repo information in match: %v", m[0])
@@ -108,7 +114,7 @@ func (p *Provider) GetOwnerAndRepoFromLocal() (string, string, error) {
 func (p *Provider) GetCurrentBranch() (string, error) {
 	out, err := p.Runner.Run("git", "branch", "--show-current")
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to run git command: %w", err)
 	}
 	return string(bytes.Trim(out, "\n")), nil
 }

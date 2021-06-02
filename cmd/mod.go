@@ -42,15 +42,13 @@ func init() {
 	f.StringSliceVarP(&replaceArgs.replacements, "replacements", "p", nil, "List of replacements (--replace mod=mod@ver, mod2=mod2@ver).")
 }
 
+// runModReplaceCmd runs the mod edit -replace producing command.
 func runModReplaceCmd(cmd *cobra.Command, args []string) {
-	result := make([]string, 0)
-	for _, replacement := range replaceArgs.replacements {
-		result = append(result, fmt.Sprintf("-replace %s", replacement))
-	}
-	fmt.Print(strings.Join(result, " "))
+	modProvider := gomod.NewProvider(gomod.Config{})
+	fmt.Print(modProvider.GetModReplacements(replaceArgs.replacements))
 }
 
-// runModLatestCmd .
+// runModLatestCmd run fetch latest module urls.
 func runModLatestCmd(cmd *cobra.Command, args []string) {
 	cfg := git.Config{
 		Runner: &runner.CLIRunner{},
