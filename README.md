@@ -79,8 +79,46 @@ These tags are pushed into on new commits so they are always up-to-date.
 
 This is a convenient function to check if your installation of Doki is up-to-date.
 
-## Development
-
 ### Optional Token
 
+If Dōki is used to access a non-public repository, calls to determine the latest version might require a token.
+For that, it provides two options:
+
+- through `DOKI_TOKEN`
+- flag `--token`
+
+## Development
+
+Running tests: `make tests`.
+
 ## Releasing
+
+There are some manual steps right now, should be streamlined soon.
+
+Steps:
+
+1. Create a new release notes file:
+   ```sh
+   touch docs/release_notes/<version>.md
+   ```
+
+1. Copy-and paste the release notes from the draft on the releases page into this file.
+   _Note: sometimes the release drafter is a bit of a pain, verify that the notes are
+   correct by doing something like: `git log --first-parent tag1..tag2`._
+
+1. PR the release notes into main.
+
+1. Create and push a tag with the new version:
+   ```sh
+   git tag <version>
+   git push origin <version>
+   ```
+
+1. The `Create release` action should run. Verify that:
+1. The release has been created in Github
+   1. With the correct assets
+   1. With the correct release notes
+1. The image has been pushed to docker
+1. The image can be pulled and used in a deployment
+
+_Note_ that `<version>` must be in the following format: `v0.0.1`. 
