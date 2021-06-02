@@ -18,6 +18,15 @@ import (
 
 var gitExtractor = regexp.MustCompile("^(https|git)(://|@)([^/:]+)[/:]([^/:]+)/(.+)$")
 
+// VCSProvider adds endpoints for version control related actions.
+//go:generate counterfeiter -o fakes/fake_vcs.go . VCSProvider
+type VCSProvider interface {
+	GetDevTag() (string, error)
+	GetLatestRemoteTag(owner, repo string) (string, error)
+	GetOwnerAndRepoFromLocal() (string, string, error)
+	GetCurrentBranch() (string, error)
+}
+
 // Config provides configuration options for the github provider.
 type Config struct {
 	Runner runner.Runner
@@ -44,6 +53,26 @@ func NewProvider(cfg Config) *Provider {
 		Config: cfg,
 		Client: client,
 	}
+}
+
+// GetDevTag returns the name of the generated development tag.
+func (p *Provider) GetDevTag() (string, error) {
+	owner, repo, err := p.GetOwnerAndRepoFromLocal()
+	if err != nil {
+		fmt.Println("Failed to get info from local repository: ", err)
+		return "", err
+	}
+	latestRelease, err := p.GetLatestRemoteTag(owner, repo)
+	if err != nil {
+		fmt.Println("Failed to get latest version for dev tagging.")
+		return "", err
+	}
+	branch, err := p.GetCurrentBranch()
+	if err != nil {
+		fmt.Println("Failed to get current branch.")
+		return "", err
+	}
+	return fmt.Sprintf("%s-%s", latestRelease, branch), nil
 }
 
 // GetLatestRemoteTag gets the latest tag from the given remote git repo.
