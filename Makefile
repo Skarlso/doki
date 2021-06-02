@@ -29,3 +29,11 @@ lint:
 .PHONY: run
 run:
 	go run main.go
+
+##@ Docs
+
+docs: mdtoc ## Update the Readme
+	mdtoc -inplace README.md
+
+mdtoc: ## Download mdtoc binary if necessary
+	GO111MODULE=off go get sigs.k8s.io/mdtoc || true

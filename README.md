@@ -2,6 +2,23 @@
 
 A companion tool to work with versioning and keeping in sync [profiles](https://github.com/weaveworks/profiles) and [pctl](https://github.com/weaveworks/pctl).
 
+<!--
+To update the TOC, install https://github.com/kubernetes-sigs/mdtoc
+and run: mdtoc -inplace README.md
+-->
+
+<!-- toc -->
+- [Features](#features)
+  - [go mod](#go-mod)
+    - [latest](#latest)
+    - [replace](#replace)
+  - [dev tags](#dev-tags)
+  - [self update-check](#self-update-check)
+  - [optional Token](#optional-token)
+- [Development](#development)
+- [Releasing](#releasing)
+<!-- /toc -->
+
 ## Features
 
 ### go mod
