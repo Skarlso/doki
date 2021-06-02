@@ -195,5 +195,77 @@ var _ = Describe("VCSProvider", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(tag).To(Equal("v1.0.0-test-branch"))
 		})
+		When("there is an error retrieving latest version", func() {
+			It("it returns a sensible error", func() {
+				u, err := url.Parse("https://github.com/octocat/Hello-World")
+				Expect(err).ToNot(HaveOccurred())
+				fakeHttpRoundTripper.RoundTripReturns(&http.Response{
+					StatusCode: http.StatusBadRequest,
+					Request: &http.Request{
+						URL: u,
+					},
+				}, errors.New("nope"))
+				p := git.Provider{
+					Config: git.Config{
+						Runner: fakeRunner,
+					},
+					Client: &http.Client{
+						Transport: fakeHttpRoundTripper,
+					},
+				}
+				fakeRunner.RunReturnsOnCall(0, []byte("git@github.com:octocat/Hello-World.git"), nil)
+				tag, err := p.GetDevTag()
+				Expect(err).To(MatchError("failed to get latest version: Get \"https://api.github.com/repos/octocat/Hello-World/releases/latest\": nope"))
+				Expect(tag).To(BeEmpty())
+				Expect(fakeRunner.RunCallCount()).To(Equal(1))
+			})
+		})
+		When("there is an error getting the repo information", func() {
+			It("it returns a sensible error", func() {
+				fakeHttpRoundTripper.RoundTripReturns(&http.Response{
+					StatusCode: http.StatusOK,
+				}, nil)
+				p := git.Provider{
+					Config: git.Config{
+						Runner: fakeRunner,
+					},
+					Client: &http.Client{
+						Transport: fakeHttpRoundTripper,
+					},
+				}
+				fakeRunner.RunReturnsOnCall(0, nil, errors.New("nope"))
+				tag, err := p.GetDevTag()
+				Expect(err).To(MatchError("failed to run git command: nope"))
+				Expect(tag).To(BeEmpty())
+				Expect(fakeRunner.RunCallCount()).To(Equal(1))
+				Expect(fakeHttpRoundTripper.RoundTripCallCount()).To(Equal(0))
+			})
+		})
+		When("there is an error getting the current branch", func() {
+			It("it returns a sensible error", func() {
+				content, err := ioutil.ReadFile(filepath.Join("testdata", "latest_release.json"))
+				Expect(err).ToNot(HaveOccurred())
+				fakeHttpRoundTripper.RoundTripReturns(&http.Response{
+					StatusCode: http.StatusOK,
+					Body:       ioutil.NopCloser(bytes.NewReader(content)),
+				}, nil)
+				Expect(err).ToNot(HaveOccurred())
+				p := git.Provider{
+					Config: git.Config{
+						Runner: fakeRunner,
+					},
+					Client: &http.Client{
+						Transport: fakeHttpRoundTripper,
+					},
+				}
+				fakeRunner.RunReturnsOnCall(0, []byte("git@github.com:octocat/Hello-World.git"), nil)
+				fakeRunner.RunReturnsOnCall(1, nil, errors.New("nope"))
+				tag, err := p.GetDevTag()
+				Expect(err).To(MatchError("failed to run git command: nope"))
+				Expect(tag).To(BeEmpty())
+				Expect(fakeRunner.RunCallCount()).To(Equal(2))
+				Expect(fakeHttpRoundTripper.RoundTripCallCount()).To(Equal(1))
+			})
+		})
 	})
 })
