@@ -7,8 +7,12 @@ import (
 	"github.com/Skarlso/doki/cmd"
 )
 
+var (
+	version = "v0.0.0-dev"
+)
+
 func init() {
-	cmd.SetVersion(releaseVersion)
+	cmd.SetVersion(version)
 }
 
 func main() {

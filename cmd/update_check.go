@@ -44,7 +44,7 @@ func runUpdateCheckCmd(cmd *cobra.Command, args []string) {
 	lv := semver.MustParse(latestVersion)
 
 	if !lv.Equal(currentVersion) {
-		fmt.Printf("Doki is not the latest version (%s -> %s)\n", lv.String(), latestVersion)
+		fmt.Printf("Dōki is not the latest version (%s -> %s)\n", lv.String(), latestVersion)
 		fmt.Println()
 		fmt.Println("To update, run:")
 		fmt.Println()
