@@ -35,7 +35,6 @@ func (p *Provider) GetLatestModuleList(args []string) ([]string, error) {
 	var allTags []string
 	for _, imp := range args {
 		if !strings.Contains(imp, "github") {
-			fmt.Println("This tool does not support novel domains at the moment.")
 			return nil, fmt.Errorf("novel domains are not supported yet %s", imp)
 		}
 		if strings.Contains(imp, "@") {

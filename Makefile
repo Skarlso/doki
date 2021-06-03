@@ -9,6 +9,8 @@ GO_LDFLAGS_STATIC="-s -w $(CTIMEVAR) -extldflags -static -X 'main.version=${VERS
 
 .DEFAULT_GOAL := binaries
 
+##@ Build
+
 .PHONY: binaries
 binaries:
 	CGO_ENABLED=0 gox \
@@ -23,12 +25,17 @@ bootstrap:
 	go get github.com/mitchellh/gox
 
 .PHONY: lint
-lint:
-	golint ./...
+lint: ## Run the linter
+	golangci-lint run --exclude-use-default=false --timeout=5m0s
 
 .PHONY: run
 run:
 	go run main.go
+
+##@ Tests
+
+unit: ## Run the unit tests
+	ginkgo -r ./pkg
 
 ##@ Docs
 
