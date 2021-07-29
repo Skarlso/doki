@@ -1,4 +1,4 @@
-name-template: 'pctl $NEXT_MINOR_VERSION'
+name-template: 'doki $NEXT_MINOR_VERSION'
 tag-template: '$NEXT_MINOR_VERSION'
 categories:
   - title: 'Features'
